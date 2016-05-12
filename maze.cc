@@ -1,11 +1,18 @@
 #include <iostream>
 #include <random>
 #include <chrono>
+#include <future>
 #include "maze.h"
 using namespace std;
 
 int Maze::shortest_steps = 10000;
+unsigned long Maze::wander = 0;
+unsigned long Maze::build = 0;
 Char2D Maze::shortcut {0, 0};
+
+void func1() {
+	this_thread::sleep_for(chrono::seconds(1));
+}
 
 Maze::Maze(int w, int h) : Char2D(w, h)
 {
@@ -21,18 +28,20 @@ Maze::Maze(const Maze& m) : Char2D(m)
 
 void Maze::build_maze()
 {
+	build++;
 	uniform_real_distribution<> nd(0,10);
 	knuth_b e(chrono::system_clock::now().time_since_epoch().count());
 	
 	for(int y=1; y<height-1; y++) {
 		for(int x=1; x<width-1; x++) {
-			if(nd(e) > 4) p_char2d[y][x] = ROAD;
+			if(nd(e) > 5) p_char2d[y][x] = ROAD;
 			else p_char2d[y][x] = WALL;
 		}
 	}
 	p_char2d[1][1] = ROAD;
 	p_char2d[height-2][width-2] = ROAD;
 	shortest_steps = 10000;
+	step = 0;
 }
 
 void Maze::outer_wall()
@@ -59,43 +68,22 @@ void Maze::find_way(int x, int y) {
 
 int Maze::best_way(int x, int y)
 {
+	wander++;
 	this->x = x; this->y = y;
-	cout << '(' << x << ',' << y << ',' << step << ')' << endl;
 	p_char2d[y][x] = SHORTCUT;
-	show();
 	if(step >= shortest_steps) return step;
 	if(width-2 == x && height-1 == y) {
-		if(step == width + height - 4) {
-			show();
-			cout << "took2 " << step << "steps" << endl;
-			exit(0);
-		}
 		if(step < shortest_steps) {
 			shortest_steps = step;
 			shortcut = *this;
 		}
 		return step;
 	}
-	if(peep(x, y-1)) {
-		Maze m(*this);
-		m.step++;
-		m.best_way(x, y-1);
-	}
-	if(peep(x, y+1)) {
-		Maze m(*this);
-		m.step++;
-		m.best_way(x, y+1);
-	}
-	if(peep(x-1, y)) {
-		Maze m(*this);
-		m.step++;
-		m.best_way(x-1, y);
-	}
-	if(peep(x+1, y)) {
-		Maze m(*this);
-		m.step++;
-		m.best_way(x+1, y);
-	}
+	auto ft = async(launch::async, bind(&Maze::time_branch, this, x, y-1));
+	time_branch(x, y+1);
+	time_branch(x+1, y);
+	time_branch(x-1, y);
+	ft.get();
 }
 
 bool Maze::peep(int x, int y)
@@ -112,4 +100,12 @@ bool Maze::peep(int x, int y)
 	} else return false;
 }
 
+void Maze::time_branch(int x, int y)
+{
+	if(peep(x, y)) {
+		Maze m(*this);
+		m.step++;
+		m.best_way(x,y);
+	}
+}
 

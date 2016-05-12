@@ -27,13 +27,9 @@ Char2D::~Char2D()
 
 void Char2D::release()
 {
-	try {
-		if(p_char2d != nullptr) {
-			for(int y=0; y<height; y++) delete [] p_char2d[y];
-			delete [] p_char2d;
-		}
-	} catch(exception& e) {
-		cout << e.what() << endl;
+	if(p_char2d != nullptr) {
+		for(int y=0; y<height; y++) delete [] p_char2d[y];
+		delete [] p_char2d;
 	}
 }
 
@@ -43,11 +39,11 @@ void Char2D::alloc()
 	for(int y=0; y<height; y++) p_char2d[y] = new char[width];
 }
 
-char Char2D::operator()(int x, int y)
+char& Char2D::operator()(int x, int y)
 {
 	if(x < 0 || x >= width) return -1;
 	if(y < 0 || y >= height) return -1;
-	return p_char2d[y][x];
+	return &p_char2d[y][x];
 }
 
 Char2D Char2D::operator=(const Char2D& c)
@@ -62,7 +58,6 @@ Char2D Char2D::operator=(const Char2D& c)
 	}
 	return *this;
 }
-
 
 void Char2D::show()
 {

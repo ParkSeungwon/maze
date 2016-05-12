@@ -6,7 +6,7 @@ public:
 	Char2D(int w, int h);
 	Char2D(const Char2D& c);
 	~Char2D();
-	char operator()(int x, int y);
+	char& operator()(int x, int y);
 	Char2D operator=(const Char2D& c);
 	void show();
 
