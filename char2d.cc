@@ -41,9 +41,9 @@ void Char2D::alloc()
 
 char& Char2D::operator()(int x, int y)
 {
-	if(x < 0 || x >= width) return -1;
-	if(y < 0 || y >= height) return -1;
-	return &p_char2d[y][x];
+	if(x < 0 || x >= width) return outofbound;
+	if(y < 0 || y >= height) return outofbound;
+	return p_char2d[y][x];
 }
 
 Char2D Char2D::operator=(const Char2D& c)

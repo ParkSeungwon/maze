@@ -1,4 +1,9 @@
 #pragma once
+#define WALL '#'
+#define ROAD ' '
+#define STEP '.'
+#define SHORTCUT '>'
+#define OUTOFBOUND 'B'
 
 class Char2D
 {
@@ -15,4 +20,7 @@ protected:
 	int width, height;
 	void release();
 	void alloc();
+
+private:
+	char outofbound = 'B';
 };

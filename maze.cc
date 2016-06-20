@@ -1,7 +1,6 @@
 #include <iostream>
 #include <random>
 #include <chrono>
-#include <future>
 #include "maze.h"
 using namespace std;
 
@@ -9,10 +8,6 @@ int Maze::shortest_steps = 10000;
 unsigned long Maze::wander = 0;
 unsigned long Maze::build = 0;
 Char2D Maze::shortcut {0, 0};
-
-void func1() {
-	this_thread::sleep_for(chrono::seconds(1));
-}
 
 Maze::Maze(int w, int h) : Char2D(w, h)
 {
@@ -79,11 +74,10 @@ int Maze::best_way(int x, int y)
 		}
 		return step;
 	}
-	auto ft = async(launch::async, bind(&Maze::time_branch, this, x, y-1));
+	time_branch(x, y-1);
 	time_branch(x, y+1);
 	time_branch(x+1, y);
 	time_branch(x-1, y);
-	ft.get();
 }
 
 bool Maze::peep(int x, int y)

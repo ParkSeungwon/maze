@@ -1,10 +1,5 @@
 #pragma once
 #include "char2d.h"
-#define WALL '#'
-#define ROAD ' '
-#define STEP '.'
-#define SHORTCUT '>'
-#define OUTOFBOUND 'B'
 
 class Maze : public Char2D
 {
