@@ -2,3 +2,7 @@
 *~
 maze
 *.swp
+find
+.
+-size
++3M
